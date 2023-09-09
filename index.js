@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 let app = require("./app");
 
-const url = "mongodb://localhost:27017/api_rest_db";
+const url = "mongodb://localhost:27017/users";
 const port = 3900;
 
 mongoose
