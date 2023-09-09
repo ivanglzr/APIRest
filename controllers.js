@@ -3,6 +3,11 @@
 const validator = require("validator");
 let User = require("./model");
 
+const validateString = (str) => {
+  if (str.length <= 0 || str == undefined || str == null) return false;
+  return true;
+};
+
 let controller = {
   prueba: (req, res) => {
     console.log(req, res);
@@ -14,33 +19,35 @@ let controller = {
   },
 
   save: (req, res) => {
-    let params = req.body;
+    let { name, email, password } = req.body;
 
-    let validate_name;
-    let validate_email;
-    let validate_password;
+    console.log(req.body); // Mostrar los datos del cuerpo de la solicitud en la consola
 
     try {
-      validate_name = !validate_name.isEmpty(params.name);
-      validate_email = !validate_email.isEmpty(params.email);
-      validate_password = !validate_password.isEmpty(params.password);
+      if (
+        !validateString(name) ||
+        !validateString(email) ||
+        !validateString(password)
+      )
+        throw "Los datos no son válidos";
     } catch (err) {
-      return res.status(404).send({
+      return res.status(400).send({
         status: "error",
         error: err,
       });
     }
 
-    if (validate_name && validate_email && validate_password) {
-      let user = new User();
-
-      user.name = params.name;
-      user.email = params.email;
-      user.password = params.password;
+    if (name && email && password) {
+      const user = new User({
+        name: name,
+        email: email,
+        password: password,
+      });
 
       user
         .save()
         .then((userStored) => {
+          console.log("User saved", userStored);
           return res.status(200).send({
             status: "success",
             user: userStored,
@@ -54,9 +61,9 @@ let controller = {
           });
         });
     } else {
-      return res.status(404).send({
+      return res.status(400).send({
         status: "error",
-        error: "Los datos no son validos",
+        error: "Los datos no son válidos",
       });
     }
   },
